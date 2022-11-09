@@ -17,18 +17,17 @@ If you want to deploy this project to Azure, follow these steps:
 
 `text in code blocks` are commands that you should enter into your terminal.
 
-`<Replace text in Brackets>` (Replace text in all caps) with your own values. Follow the casing and spacing of the example:
+`<Replace text in Brackets>` with your own values. Follow the casing and spacing of the example:
 
-* `<camelCase>`
-* `<snake_case>`
+* `<ALLCAPS>`
+* `<lowercase>`
 * `<kebab-case>`
-* `<PascalCase>`
-* `<MACRO_CASE>`
 
 follow the guidance in the comments `foo # follow these notes`
 ### [OPTIONAL] Step -1: Ensure your container builds locally
-    `docker build -t <YOURNAME:YOURTAG> .`
-    `docker run -p <EXTERNALPORT:INTERNALPORT YOURNAME:YOURTAG>`
+
+    `docker build -t <yourname:yourtag> .`
+    `docker run -p <EXTERNALPORT:INTERNALPORT YOURNAME:YOURTAG>` # Ports are your port number 5000:5000 by default.
 
 This ensures that your app itself is working and issues will not be caused by syntax or other issues.
 
@@ -45,41 +44,40 @@ Setting the variables below will make entering commands a little faster and more
    6. `REGISTRY_SERVER=$ACR_NAME".azurecr.io"`
    7. `IMAGE_URI=$ACR/$API_NAME`
 ### Step 2: Create A Resource Group
-   ```bash
-   az group create \
-   --name $RESOURCE_GROUP \
-   --location $LOCATION
-   ```
+```bash
+az group create \
+--name $RESOURCE_GROUP \
+--location $LOCATION
+```
 
 ### Step 3: Create a Container Registry
 
-   ```bash
-   az acr create \
-      --resource-group $RESOURCE_GROUP \
-      --name $ACR_NAME \
-      --sku Basic \
-      --admin-enabled true
-   ```
+```bash
+az acr create \
+   --resource-group $RESOURCE_GROUP \
+   --name $ACR_NAME \
+   --sku Basic \
+   --admin-enabled true
+```
 ### Step 4: Build Your Container
-    `docker build -t $REGISTRY_SERVER . --platform linux/amd64`
+`docker build -t $REGISTRY_SERVER . --platform linux/amd64`
 
 ### Step 5: Login into the Azure Container Registry
-    `az acr login --name $REGISTRY_SERVER`
-
+`az acr login --name $REGISTRY_SERVER`
 
 ### Step 6: Push your container to the Azure Container Registry
-    `docker push $IMAGE_URL`
+`docker push $IMAGE_URL`
 ### Step 7: Create an ACA Environment
-   `az containerapp env create --resource-group $RESOURCE_GROUP --name $ENVIRONMENT --location $LOCATION`
+`az containerapp env create --resource-group $RESOURCE_GROUP --name $ENVIRONMENT --location $LOCATION`
 
 ### Step 6: Deploy Your Container to the Container App
-   ```bash
-   az containerapp create \
-   --resource-group $RESOURCE_GROUP \
-   --name $API_NAME \
-   --environment $ENVIRONMENT \
-   --image $IMAGE_URI \
-   --target-port INTERNALPORT \
-   --ingress 'external' \
-   --registry-server $REGISTRY_SERVER \
-   ```
+```bash
+az containerapp create \
+--resource-group $RESOURCE_GROUP \
+--name $API_NAME \
+--environment $ENVIRONMENT \
+--image $IMAGE_URI \
+--target-port INTERNALPORT \
+--ingress 'external' \
+--registry-server $REGISTRY_SERVER \
+```
