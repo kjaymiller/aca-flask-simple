@@ -9,6 +9,8 @@ This repo walks you through the steps to deploy a simple hello world flask app (
 
 ## QuickStart (Deploy this Project) Estimated time: 8 minutes
 
+The instructions to build this project are heavily inspired by [Quickstart: Deploy your code to Azure Container Apps](https://learn.microsoft.com/en-us/azure/container-apps/quickstart-code-to-cloud?tabs=bash%2Cpython&pivots=docker-local)
+
 If you want to deploy this project to Azure, follow these steps:
 
 #### Instructions
@@ -25,37 +27,48 @@ If you want to deploy this project to Azure, follow these steps:
 
 follow the guidance in the comments `foo # follow these notes`
 ### [OPTIONAL] Step -1: Ensure your container builds locally
-    `docker build -t YOURNAME:YOURTAG .`
-    `docker run -p EXTERNALPORT:INTERNALPORT YOURNAME:YOURTAG`
+    `docker build -t <YOURNAME:YOURTAG> .`
+    `docker run -p <EXTERNALPORT:INTERNALPORT YOURNAME:YOURTAG>`
 
 This ensures that your app itself is working and issues will not be caused by syntax or other issues.
 
-### [OPTIONAL] Step 0: Set environment variables
+### Step 1: Set environment variables
 
 Setting the variables below will make entering commands a little faster and more consistent.
 
    1. `RESOURCE_GROUP="<my-resource-group>"`
-   2. `LOCATION="westus"` # Change to your preferred
-   3. `ENVIRONMENT="MY-ENVIRONMENT"`
-   4. `API_NAME="MY-API-NAME"`
-   5. `UNQIUE_CHARACTERS="MY-UNIQUE-CHARACTERS"` # to ensure a truly unique name
-### Step 1: Create Container Registry
-   `$ACR_NAME="acaprojectname"+$UNIQUE` # must be all lowercase
+   2. `LOCATION="<westus>"` # Change to your preferred [location](https://azure.microsoft.com/en-us/explore/global-infrastructure/products-by-region/?products=container-apps)
+   3. `ENVIRONMENT="<my-environment>"`
+   4. `API_NAME="<my-api-name>"`
+   5. `UNQIUE="<my-unique-characters>"` # try to be unique to avoid conflicts
+   `ACR_NAME="acaprojectname"+$UNIQUE` # must be all lowercase
+   6. `REGISTRY_SERVER=$ACR_NAME".azurecr.io"`
+   7. `IMAGE_URI=$ACR/$API_NAME`
 ### Step 2: Create A Resource Group
-   `az group create --name $RESOURCE_GROUP --location $LOCATION`
+   ```bash
+   az group create \
+   --name $RESOURCE_GROUP \
+   --location $LOCATION
+   ```
 
 ### Step 3: Create a Container Registry
-   `az acr create --resource-group $RESOURCE_GROUP --name $ACR_NAME --sku Basic --admin-enabled true`
 
+   ```bash
+   az acr create \
+      --resource-group $RESOURCE_GROUP \
+      --name $ACR_NAME \
+      --sku Basic \
+      --admin-enabled true
+   ```
 ### Step 4: Build Your Container
-    `docker build -t $ACR_NAME.azurecr.io/$API_NAME . --platform linux/amd64`
+    `docker build -t $REGISTRY_SERVER . --platform linux/amd64`
 
 ### Step 5: Login into the Azure Container Registry
-    `az acr login --name $ACR_NAME`
+    `az acr login --name $REGISTRY_SERVER`
 
 
 ### Step 6: Push your container to the Azure Container Registry
-    `docker push $ACR_NAME.azurecr.io/$API_NAME`
+    `docker push $IMAGE_URL`
 ### Step 7: Create an ACA Environment
    `az containerapp env create --resource-group $RESOURCE_GROUP --name $ENVIRONMENT --location $LOCATION`
 
@@ -65,8 +78,8 @@ Setting the variables below will make entering commands a little faster and more
    --resource-group $RESOURCE_GROUP \
    --name $API_NAME \
    --environment $ENVIRONMENT \
-   --image $ACR_NAME.azurecr.io/$API_NAME \
+   --image $IMAGE_URI \
    --target-port INTERNALPORT \
    --ingress 'external' \
-   --registry-server "$ACR_NAME.azurecr.io"
+   --registry-server $REGISTRY_SERVER \
    ```
