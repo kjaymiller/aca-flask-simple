@@ -19,18 +19,24 @@ This repo walks you through the steps to deploy a simple hello world flask app (
    4. `API_NAME="MY-API-NAME"`
    5. `UNQIUE_CHARACTERS="MY-UNIQUE-CHARACTERS"`
 ### Step 1: Create Container Registry
-   `$ACR_NAME="acaPROJECTNAME"+$UNIQUE_CHARACTERS`
+   `$ACR_NAME="acaprojectname"+$UNIQUE` # must be all lowercase
 ### Step 2: Create A Resource Group
    `az group create --name $RESOURCE_GROUP --location $LOCATION`
 
 ### Step 3: Create a Container Registry
-   `az acr create --resource-group $RESOURCE_GROUP --name $ACR_NAME --sku Basic`
+   `az acr create --resource-group $RESOURCE_GROUP --name $ACR_NAME --sku Basic --admin-enabled true`
 
 ### Step 4: Build Your Container
-    `docker build -t $ACR_NAME.azurecr.io/$API_NAME .`
+    `docker build -t $ACR_NAME.azurecr.io/$API_NAME . --platform linux/amd64`
 
-### Step 5: Create an ACA Environment
-   `az aca environment create --resource-group $RESOURCE_GROUP --name $ENVIRONMENT --location $LOCATION`
+### Step 5: Login into the Azure Container Registry
+    `az acr login --name $ACR_NAME`
+
+
+### Step 6: Push your container to the Azure Container Registry
+    `docker push $ACR_NAME.azurecr.io/$API_NAME`
+### Step 7: Create an ACA Environment
+   `az containerapp env create --resource-group $RESOURCE_GROUP --name $ENVIRONMENT --location $LOCATION`
 
 ### Step 6: Deploy Your Container to the Container App
    ```bash
