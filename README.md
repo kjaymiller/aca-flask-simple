@@ -80,7 +80,7 @@ az containerapp create \
 --name $API_NAME \
 --environment $ENVIRONMENT \
 --image $IMAGE_URI \
---target-port INTERNALPORT \
+--target-port <INTERNALPORT> \
 --ingress 'external' \
 --registry-server $REGISTRY_SERVER \
 ```
