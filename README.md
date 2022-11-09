@@ -1,10 +1,9 @@
-# Add your Flask App (NoDB) to Azure via Azure Container Services
+# Add Simple Flask App to Azure via Azure Container Services and Azure Container Registry (ACA)
 
-This repo walks you through the steps to deploy a Flask App (NoDB) to [Azure Container Services (ACS)](https://learn.microsoft.com/en-us/azure/container-apps/overview) using the Azure Developer CLI.
+This repo walks you through the steps to deploy a simple hello world flask app (NoDB) to [Azure Container Services (ACS)](https://learn.microsoft.com/en-us/azure/container-apps/overview) using the Azure Developer CLI.
 
 ## System Prerequisites
 
-* [Azure Developer CLI](https://learn.microsoft.com/en-us/azure/developer/azure-developer-cli/get-started?tabs=baremetal&pivots=programming-language-python)
 * [Azure CLI](https://learn.microsoft.com/en-us/cli/azure/install-azure-cli)
 * [Docker](https://docs.docker.com/install/)
 
@@ -58,3 +57,7 @@ You can modify the path in your Dockerfile to point to your app.py file. For exa
 
 ### The application is not running on port 5000
 You can modify the FLASK_PORT in your Dockerfile to point to your app.py file. For example, if your app.py file is running on port 8000, you can modify the Dockerfile to look like this:
+
+
+### Learn More
+Visit 
