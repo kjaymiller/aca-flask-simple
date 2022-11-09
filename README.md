@@ -7,17 +7,38 @@ This repo walks you through the steps to deploy a simple hello world flask app (
 * [Azure CLI](https://learn.microsoft.com/en-us/cli/azure/install-azure-cli)
 * [Docker](https://docs.docker.com/install/)
 
-## QuickStart
+## QuickStart (Deploy this Project) Estimated time: 8 minutes
+
+If you want to deploy this project to Azure, follow these steps:
+
+#### Instructions
+
+`text in code blocks` are commands that you should enter into your terminal.
+
+`<Replace text in Brackets>` (Replace text in all caps) with your own values. Follow the casing and spacing of the example:
+
+* `<camelCase>`
+* `<snake_case>`
+* `<kebab-case>`
+* `<PascalCase>`
+* `<MACRO_CASE>`
+
+follow the guidance in the comments `foo # follow these notes`
 ### [OPTIONAL] Step -1: Ensure your container builds locally
     `docker build -t YOURNAME:YOURTAG .`
     `docker run -p EXTERNALPORT:INTERNALPORT YOURNAME:YOURTAG`
 
+This ensures that your app itself is working and issues will not be caused by syntax or other issues.
+
 ### [OPTIONAL] Step 0: Set environment variables
-   1. `RESOURCE_GROUP="MYRESOURCEGROUP"`
+
+Setting the variables below will make entering commands a little faster and more consistent.
+
+   1. `RESOURCE_GROUP="<my-resource-group>"`
    2. `LOCATION="westus"` # Change to your preferred
    3. `ENVIRONMENT="MY-ENVIRONMENT"`
    4. `API_NAME="MY-API-NAME"`
-   5. `UNQIUE_CHARACTERS="MY-UNIQUE-CHARACTERS"`
+   5. `UNQIUE_CHARACTERS="MY-UNIQUE-CHARACTERS"` # to ensure a truly unique name
 ### Step 1: Create Container Registry
    `$ACR_NAME="acaprojectname"+$UNIQUE` # must be all lowercase
 ### Step 2: Create A Resource Group
@@ -48,22 +69,4 @@ This repo walks you through the steps to deploy a simple hello world flask app (
    --target-port INTERNALPORT \
    --ingress 'external' \
    --registry-server "$ACR_NAME.azurecr.io"
-    ```
-
-## Known Issues
-
-### My Projet is not in the `src` folder
-You can modify the path in your Dockerfile to point to your project folder. For example, if your project is in the `app` folder, you can change the `WORKDIR /src` to `WORKDIR /app` and the `COPY` to `COPY . /app`
-
-### The application path is not `app.py`
-You can modify the path in your Dockerfile to point to your app.py file. For example, if your app.py file is in  `src` folder, you can modify the Dockerfile to look like this:
-
-    COPY src .
-    CMD ["python", "app.py"]
-
-### The application is not running on port 5000
-You can modify the FLASK_PORT in your Dockerfile to point to your app.py file. For example, if your app.py file is running on port 8000, you can modify the Dockerfile to look like this:
-
-
-### Learn More
-Visit 
+   ```
