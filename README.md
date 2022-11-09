@@ -24,10 +24,13 @@ If you want to deploy this project to Azure, follow these steps:
 * `<kebab-case>`
 
 follow the guidance in the comments `foo # follow these notes`
-### [OPTIONAL] Step -1: Ensure your container builds locally
+### [OPTIONAL] Step 0: Ensure your container builds locally
 
-    `docker build -t <yourname:yourtag> .`
-    `docker run -p <EXTERNALPORT:INTERNALPORT YOURNAME:YOURTAG>` # Ports are your port number 5000:5000 by default.
+```bash
+docker build -t <yourname:yourtag> .
+docker run -p <EXTERNALPORT:INTERNALPORT YOURNAME:YOURTAG> 
+```
+> NOTE: # Ports are your port number 5000:5000 by default.
 
 This ensures that your app itself is working and issues will not be caused by syntax or other issues.
 
