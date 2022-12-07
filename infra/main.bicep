@@ -16,52 +16,29 @@ param containerAppsEnvironmentName string = ''
 param containerRegistryName string = ''
 param logAnalyticsName string = ''
 param resourceGroupName string = ''
-param webContainerAppName string = ''
 
-@description('Id of the user or app to assign application roles')
-param principalId string = ''
-
-@description('The image name for the container')
-param containerImageName string = ''
+param appImageName string = ''
 
 var abbrs = loadJsonContent('./abbreviations.json')
 var resourceToken = toLower(uniqueString(subscription().id, environmentName, location))
-var tags = {'azd-env-name': environmentName, 'azd-env-abbr': abbrs[environmentName]}
+var tags = {'azd-env-name': environmentName}
 
-resource rg 'Microsoft.Resources/resourceGroups@2021-04-01' = {
-  name: !empty(resourceGroupName) ? resourceGroupName: '${abbrs.resourcesResourceGroups}${environmentName}'
+@description('Create the Resource Group for the environment.')
+resource rg 'Microsoft.Resources/resourceGroups@2022-09-01' = {
+  name: !empty(resourceGroupName) ? resourceGroupName : '${abbrs.resourcesResourceGroups}${environmentName}'
   tags: tags
   location: location
 }
 
-module containerApps './core/host/container-apps.bicep' = {
-  name: 'containerApps'
+module containerApps './core/host/host/container-apps.bicep' = {
+  name: 'container-apps'
   scope: rg
   params: {
     name: 'app'
-    containerAppsEnvironmentName: !empty(containerAppsEnvironmentName) ? containerAppsEnvironmentName: '${abbrs.appManagedEnvironments}${resourceToken}'
+    containerAppsEnvironmentName: !empty(containerAppsEnvironmentName) ? containerAppsEnvironmentName : '${abbrs.appManagedEnvironments}${resourceToken}'
+    containerRegistryName: !empty(containerRegistryName) ? containerRegistryName : '${abbrs.containerRegistryRegistries}${resourceToken}'
     location: location
-    logAnalyticsName: monitoring.outputs.logAnalyticsWorkspaceName
-  }
-}
-
-module resources './resources.bicep' = {
-  name: 'resources'
-  scope: rg
-  params: {
-    name: name
-    location: location
-  }
-}
-
-
-module github './github/resources.bicep' = {
-  name: 'github'
-  scope: rg
-  params: {
-    imagename: 'ghcr.io/kjaymiller/aca-flask-simple:main'
-    name: name
-    location: location
+    logAnalyticsWorkspaceName: monitoring.outputs.logAnalyticsWorkspaceName
   }
 }
 
@@ -77,3 +54,19 @@ module monitoring './core/host/monitor/monitoring.bicep' = {
     applicationInsightsDashboardName: !empty(applicationInsightsDashboardName) ? applicationInsightsDashboardName: '${abbrs.portalDashboards}${resourceToken}'
   }
 }
+module myapp './azure/app.bicep' = {
+  name: 'myapp'
+  scope: rg
+  params: {
+    name: !empty(apiContainerAppName) ? apiContainerAppName : '${abbrs.appContainerApps}api-${resourceToken}'
+    location: location
+    imageName: appImageName
+    containerAppsEnvironmentName: containerApps.outputs.environmentName
+    containerRegistryName: containerApps.outputs.registryName
+  }
+}
+
+output APPLICATIONINSIGHTS_CONNECTION_STRING string = monitoring.outputs.applicationInsightsConnectionString
+output APPLICATIONINSIGHTS_NAME string = monitoring.outputs.applicationInsightsName
+output AZURE_CONTAINER_REGISTRY_ENDPOINT string = containerApps.outputs.registryLoginServer
+output AZURE_CONTAINER_REGISTRY_NAME string = containerApps.outputs.registryName
